@@ -1,45 +1,66 @@
 "use client"
 
 import { PrivyProvider } from '@privy-io/react-auth'
+import { WagmiProvider } from '@privy-io/wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { OnchainKitProvider } from '@coinbase/onchainkit'
+import { base } from 'viem/chains'
+import { http } from 'viem'
+import { createConfig } from 'wagmi'
+
+// Create wagmi config
+const config = createConfig({
+  chains: [base],
+  transports: {
+    [base.id]: http(),
+  },
+})
+
+// Create react-query client
+const queryClient = new QueryClient()
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID
+  const onchainKitApiKey = process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || ''
   
   if (!appId) {
     throw new Error('NEXT_PUBLIC_PRIVY_APP_ID is not defined in environment variables')
   }
 
   return (
-    <PrivyProvider
-      appId={appId}
-      config={{
-        appearance: {
-          theme: 'light',
-          accentColor: '#0d47a1', // Using your project's primary blue color
-          logo: 'https://your-logo-url.com/logo.png', // Optional: Add your logo
-        },
-        embeddedWallets: {
-          createOnLogin: 'users-without-wallets',
-        },
-        loginMethods: ['wallet', 'email', 'sms'],
-        supportedChains: [
-          {
-            id: 1, // Ethereum Mainnet
-            name: 'Ethereum',
-            network: 'homestead',
-            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-            rpcUrls: {
-              default: { http: ['https://eth.llamarpc.com'] },
-              public: { http: ['https://eth.llamarpc.com'] },
-            },
-            blockExplorers: {
-              default: { name: 'Etherscan', url: 'https://etherscan.io' },
-            },
+    <QueryClientProvider client={queryClient}>
+      <PrivyProvider
+        appId={appId}
+        config={{
+          appearance: {
+            theme: 'light',
+            accentColor: '#0052ff', // Base blue color
+            logo: '/koneque.png',
           },
-        ],
-      }}
-    >
-      {children}
-    </PrivyProvider>
+          embeddedWallets: {
+            createOnLogin: 'users-without-wallets',
+            requireUserPasswordOnCreate: false,
+          },
+          loginMethods: ['wallet', 'email', 'sms'],
+          supportedChains: [base],
+          defaultChain: base,
+        }}
+      >
+        <WagmiProvider config={config}>
+          <OnchainKitProvider
+            apiKey={onchainKitApiKey}
+            chain={base}
+            config={{
+              appearance: {
+                mode: 'light',
+                theme: 'base',
+              },
+            }}
+          >
+            {children}
+          </OnchainKitProvider>
+        </WagmiProvider>
+      </PrivyProvider>
+    </QueryClientProvider>
   )
 }

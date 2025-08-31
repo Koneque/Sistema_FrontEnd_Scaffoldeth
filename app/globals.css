@@ -1,33 +1,34 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@coinbase/onchainkit/styles.css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color palette for modern general marketplace with deep blue, white, and gold/orange accents */
+  /* Updated color palette for Base mini app with blue theme */
   --background: #ffffff; /* White background */
-  --foreground: #003366; /* Deep blue text */
-  --card: #f1f5f9; /* Light gray card background */
-  --card-foreground: #003366; /* Deep blue card text */
+  --foreground: #1e293b; /* Dark gray text for better readability */
+  --card: #f8fafc; /* Very light gray card background */
+  --card-foreground: #1e293b; /* Dark gray card text */
   --popover: #ffffff; /* White popover background */
-  --popover-foreground: #003366; /* Deep blue popover text */
-  --primary: #003366; /* Deep blue primary */
+  --popover-foreground: #1e293b; /* Dark gray popover text */
+  --primary: #0052ff; /* Base blue primary */
   --primary-foreground: #ffffff; /* White text on primary */
-  --secondary: #ffa500; /* Gold/orange secondary */
-  --secondary-foreground: #ffffff; /* White text on secondary */
+  --secondary: #f1f5f9; /* Light gray secondary */
+  --secondary-foreground: #1e293b; /* Dark gray text on secondary */
   --muted: #f1f5f9; /* Light gray muted */
-  --muted-foreground: #475569; /* Muted text color */
-  --accent: #ffa500; /* Gold/orange accent */
-  --accent-foreground: #003366; /* Deep blue text on accent */
-  --destructive: #be123c; /* Destructive red */
+  --muted-foreground: #64748b; /* Muted text color */
+  --accent: #0052ff; /* Base blue accent */
+  --accent-foreground: #ffffff; /* White text on accent */
+  --destructive: #ef4444; /* Destructive red */
   --destructive-foreground: #ffffff; /* White text on destructive */
-  --border: #d1d5db; /* Light border */
+  --border: #e2e8f0; /* Light border */
   --input: #ffffff; /* White input background */
-  --ring: rgba(0, 51, 102, 0.2); /* Deep blue focus ring */
-  --chart-1: #ffa500; /* Gold chart color */
-  --chart-2: #003366; /* Deep blue chart color */
-  --chart-3: #f1f5f9; /* Light gray chart color */
-  --chart-4: #475569; /* Muted chart color */
+  --ring: rgba(0, 82, 255, 0.2); /* Base blue focus ring */
+  --chart-1: #0052ff; /* Base blue chart color */
+  --chart-2: #10b981; /* Green chart color */
+  --chart-3: #f59e0b; /* Orange chart color */
+  --chart-4: #8b5cf6; /* Purple chart color */
   --chart-5: #d1d5db; /* Border chart color */
   --radius: 0.5rem; /* Rounded corners */
   --sidebar: #f1f5f9; /* Light gray sidebar */

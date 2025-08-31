@@ -5,7 +5,6 @@ import { TransactionComponents } from '@/components/TransactionComponents'
 import { usePrivy } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
 import { ShoppingBag, Zap, CreditCard } from 'lucide-react'
-import Image from 'next/image'
 
 export default function HomePage() {
   const { ready, authenticated } = usePrivy()
@@ -28,7 +27,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Image src="/koneque.png" alt="Koñeque" width={32} height={32} className="mr-3" />
+              <img src="/koneque.png" alt="Koñeque" className="h-8 w-auto mr-3" />
               <h1 className="text-xl font-bold text-gray-900">Koñeque</h1>
               <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                 Base Network
