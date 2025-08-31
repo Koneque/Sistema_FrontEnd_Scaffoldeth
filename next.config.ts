@@ -5,42 +5,10 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@coinbase/onchainkit'],
   },
-  turbopack: {
-    loaders: {
-      // Configure TypeScript loader for better performance
-      '.ts': ['ts-loader'],
-      '.tsx': ['ts-loader'],
-      // Configure CSS modules
-      '.module.css': ['css-loader'],
-      // Configure SCSS if needed
-      '.scss': ['sass-loader'],
-      '.module.scss': ['sass-loader'],
-    },
-    resolveAlias: {
-      // Optimize common imports
-      '@': './src',
-      '@components': './components',
-      '@lib': './lib',
-      '@app': './app',
-    },
-    resolveExtensions: [
-      '.js',
-      '.jsx',
-      '.ts',
-      '.tsx',
-      '.json',
-      '.css',
-      '.scss',
-    ],
-    rules: [
-      {
-        source: {
-          include: ['**/*.{js,jsx,ts,tsx}'],
-        },
-        loaders: ['swc-loader'],
-      },
-    ],
-  },
+  // Enable static exports for better Mini App performance
+  output: 'standalone',
+  
+  // Image optimization for Mini Apps
   images: {
     domains: ['wallet-api-production.s3.amazonaws.com', 'mintlify-assets.b-cdn.net'],
     remotePatterns: [
@@ -49,11 +17,43 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+    // Optimize for Mini Apps
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  
+  // Environment variables for Mini Apps
   env: {
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
+    NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+    NEXT_PUBLIC_ONCHAINKIT_API_KEY: process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY,
   },
+  
+  // Headers for Mini Apps security
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
   webpack: (config: any) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

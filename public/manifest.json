@@ -1,0 +1,13 @@
+{
+  "url": "https://your-app.vercel.app",
+  "name": "Koneque Marketplace",
+  "version": "1.0.0",
+  "iconUrl": "https://your-app.vercel.app/koneque.png",
+  "buttonTitle": "Abrir Koneque",
+  "description": "Plataforma de comercio digital descentralizada con pagos en criptomonedas",
+  "aboutUrl": "https://your-app.vercel.app/about",
+  "imageUrl": "https://your-app.vercel.app/splash.png",
+  "splashImageUrl": "https://your-app.vercel.app/splash.png",
+  "splashBackgroundColor": "#0d47a1",
+  "homeUrl": "https://your-app.vercel.app"
+}

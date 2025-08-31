@@ -1,151 +1,225 @@
-"use client"
+'use client';
 
-import { WalletWrapper } from '@/components/WalletWrapper'
-import { TransactionComponents } from '@/components/TransactionComponents'
-import { usePrivy } from '@privy-io/react-auth'
-import { Button } from '@/components/ui/button'
-import { ShoppingBag, Zap, CreditCard } from 'lucide-react'
-import Image from 'next/image'
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { Wallet, ConnectWallet } from '@coinbase/onchainkit/wallet';
+import { useAccount } from 'wagmi';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ProductListing } from '@/components/ProductListing';
+import { ProductPurchase } from '@/components/ProductPurchase';
+import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { MiniKitStatus } from '@/components/MiniKitStatus';
 
-export default function HomePage() {
-  const { ready, authenticated } = usePrivy()
+type Tab = 'marketplace' | 'sell' | 'wallet';
 
-  if (!ready) {
+export default function Home() {
+  const { address, isConnected } = useAccount();
+  const [activeTab, setActiveTab] = useState<Tab>('marketplace');
+  const { setFrameReady, isFrameReady } = useMiniKit();
+
+  // Initialize MiniKit when the app is ready
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [isFrameReady, setFrameReady]);
+
+  const tabs = [
+    { id: 'marketplace' as Tab, label: '🛍️ Marketplace', description: 'Comprar productos' },
+    { id: 'sell' as Tab, label: '💰 Vender', description: 'Listar productos' },
+    { id: 'wallet' as Tab, label: '👛 Wallet', description: 'Gestionar tokens' },
+  ];
+
+  if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Koñeque...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <Image
+                src="/koneque.png"
+                alt="Koneque"
+                width={120}
+                height={120}
+                className="rounded-full"
+              />
+            </div>
+            <CardTitle className="text-2xl font-bold text-gray-800">
+              Bienvenido a Koneque
+            </CardTitle>
+            <p className="text-gray-600">
+              Marketplace descentralizado en Base Sepolia
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-800">Características:</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Compra y venta de productos</li>
+                <li>• Pagos con tokens KNQ</li>
+                <li>• Sistema de referidos</li>
+                <li>• Transacciones seguras</li>
+                <li>• IPFS para almacenamiento</li>
+              </ul>
+            </div>
+            
+            <Separator />
+            
+            <div className="text-center">
+              <p className="text-sm text-gray-500 mb-4">
+                Conecta tu wallet para comenzar
+              </p>
+              <ConnectWallet />
+            </div>
+            
+            <div className="text-center">
+              <Badge variant="outline" className="text-xs">
+                Base Sepolia Testnet
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Image src="/koneque.png" alt="Koñeque" width={32} height={32} className="mr-3" />
-              <h1 className="text-xl font-bold text-gray-900">Koñeque</h1>
-              <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                Base Network
-              </span>
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/koneque.png"
+                alt="Koneque"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <h1 className="text-xl font-bold text-gray-800">Koneque</h1>
+              <Badge variant="outline" className="text-xs">
+                Base Sepolia
+              </Badge>
             </div>
-            <WalletWrapper />
+            
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                {address?.slice(0, 6)}...{address?.slice(-4)}
+              </div>
+              <Wallet>
+                <ConnectWallet />
+              </Wallet>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!authenticated ? (
-          /* Welcome Section */
-          <div className="text-center mb-12">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 mb-8">
-              <h2 className="text-3xl font-bold mb-4">
-                Welcome to Koñeque
-              </h2>
-              <p className="text-xl mb-6">
-                The decentralized marketplace powered by Base network
-              </p>
-              <div className="grid md:grid-cols-3 gap-6 mt-8">
-                <div className="text-center">
-                  <Zap className="h-12 w-12 mx-auto mb-3 text-yellow-300" />
-                  <h3 className="font-semibold mb-2">Lightning Fast</h3>
-                  <p className="text-blue-100">Instant transactions on Base</p>
-                </div>
-                <div className="text-center">
-                  <CreditCard className="h-12 w-12 mx-auto mb-3 text-green-300" />
-                  <h3 className="font-semibold mb-2">Low Fees</h3>
-                  <p className="text-blue-100">Minimal transaction costs</p>
-                </div>
-                <div className="text-center">
-                  <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-pink-300" />
-                  <h3 className="font-semibold mb-2">Secure Shopping</h3>
-                  <p className="text-blue-100">Crypto payments made easy</p>
-                </div>
+      {/* Navigation Tabs */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex space-x-1 bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-white text-blue-600 shadow-sm border border-blue-200'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+              }`}
+            >
+              <div className="text-center">
+                <div className="font-medium">{tab.label}</div>
+                <div className="text-xs opacity-75">{tab.description}</div>
               </div>
-            </div>
-          </div>
-        ) : (
-          /* Dashboard for authenticated users */
-          <div className="space-y-8">
-            <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <h2 className="text-2xl font-bold mb-4">Welcome back!</h2>
-              <p className="text-gray-600 mb-4">
-                Your wallet is connected to Base network. Start shopping with crypto!
-              </p>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Button className="h-20 flex flex-col items-center justify-center">
-                  <ShoppingBag className="h-6 w-6 mb-2" />
-                  Browse Products
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                  <CreditCard className="h-6 w-6 mb-2" />
-                  Payment History
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
-                  <Zap className="h-6 w-6 mb-2" />
-                  Quick Buy
-                </Button>
-              </div>
-            </div>
+            </button>
+          ))}
+        </div>
+      </div>
 
-            {/* Transaction Components */}
-            <TransactionComponents />
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {activeTab === 'marketplace' && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Marketplace
+              </h2>
+              <p className="text-gray-600">
+                Descubre y compra productos únicos
+              </p>
+            </div>
+            <ProductPurchase />
           </div>
         )}
 
-        {/* Features Section */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-          <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-            <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Zap className="h-6 w-6 text-blue-600" />
+        {activeTab === 'sell' && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Vender Producto
+              </h2>
+              <p className="text-gray-600">
+                Lista tu producto en el marketplace
+              </p>
             </div>
-            <h3 className="font-semibold mb-2">Fast Payments</h3>
-            <p className="text-gray-600 text-sm">Lightning-fast crypto payments with Base network</p>
+            <ProductListing />
           </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="h-6 w-6 text-green-600" />
-            </div>
-            <h3 className="font-semibold mb-2">Low Fees</h3>
-            <p className="text-gray-600 text-sm">Minimal transaction costs compared to other networks</p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-            <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag className="h-6 w-6 text-purple-600" />
-            </div>
-            <h3 className="font-semibold mb-2">Secure Shopping</h3>
-            <p className="text-gray-600 text-sm">Built on Base blockchain for maximum security</p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-            <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag className="h-6 w-6 text-orange-600" />
-            </div>
-            <h3 className="font-semibold mb-2">Easy to Use</h3>
-            <p className="text-gray-600 text-sm">Simple interface powered by OnchainKit</p>
-          </div>
-        </div>
-      </main>
+        )}
 
-      {/* Footer */}
-      <footer className="bg-white border-t mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-600">
-              Powered by <span className="font-semibold text-blue-600">Base Network</span> & 
-              <span className="font-semibold text-purple-600"> OnchainKit</span>
-            </p>
+        {activeTab === 'wallet' && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Gestión de Wallet
+              </h2>
+              <p className="text-gray-600">
+                Administra tus tokens y transacciones
+              </p>
+            </div>
+            
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle>Estado de la Wallet</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h3 className="font-semibold text-blue-800">Dirección</h3>
+                    <p className="text-sm text-blue-600 font-mono">
+                      {address}
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <h3 className="font-semibold text-green-800">Red</h3>
+                    <p className="text-sm text-green-600">
+                      Base Sepolia Testnet
+                    </p>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="text-center">
+                  <p className="text-sm text-gray-500 mb-4">
+                    Funciones adicionales próximamente...
+                  </p>
+                  <Button variant="outline" disabled>
+                    Ver Historial de Transacciones
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      </footer>
+        )}
+      </div>
+
+      {/* MiniKit Status Indicator */}
+      <MiniKitStatus />
     </div>
-  )
+  );
 }
